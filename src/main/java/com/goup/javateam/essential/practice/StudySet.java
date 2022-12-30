@@ -11,12 +11,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class StudySet {
 
-  static void exeNoDuplicate(int i){
+  static void exeNoDuplicate(){
+    log.info("--- --- remove duplicate value --- ---");
     List<Integer> numList = Arrays.asList(111,129,3,3,129,
                                           111,3,4,5,6,
                                           4,3,2,111);
     log.info("size of numList:{}",numList.size());
     Set<Integer> numSet = numList.stream().collect(Collectors.toSet());
+    numSet.add(2);
     log.info("size of numSet:{}, each of them : {}",numSet.size(),numSet);
 
     String b = "b";
@@ -35,9 +37,43 @@ public class StudySet {
     log.info("size of elementSetSet:{}, each of them : {}",elementSetSet.size(),elementSetSet);
   }
 
+  static void bulkOperation(){
+    log.info("--- --- Bulk Operations containall --- ---");
+    List<Integer> numList1 = Arrays.asList(1,2,3,4,5);
+    List<Integer> numList2 = Arrays.asList(11,13,5);
+    List<Integer> numList3 = Arrays.asList(1,3,5);
+    Set<Integer> numSet1 = numList1.stream().collect(Collectors.toSet());
+    Set<Integer> numSet2 = numList2.stream().collect(Collectors.toSet());
+    Set<Integer> numSet3 = numList3.stream().collect(Collectors.toSet());
+    log.info("numSet2 all of numSet1 : {}", numSet1.containsAll(numSet2));
+    log.info("numSet3 all of numSet1 : {}", numSet1.containsAll(numSet3));
+
+  }
+
+  static <T>void bulkOperation(List<T> s1,List<T> s2 ,FunctionTwo<Set<T>> op){
+    log.info("--- --- Bulk Operations --- ---");
+    Set<T> numSet1 = s1.stream().collect(Collectors.toSet());
+    Set<T> numSet2 = s2.stream().collect(Collectors.toSet());
+    op.apply(numSet1,numSet2);
+    log.info("{}", numSet1);
+    log.info("{}", numSet2);
+  }
+
+  @FunctionalInterface
+  interface FunctionTwo<M> {
+    public void apply(M one, M two);
+  }
+
+
   public static void main(String[] args) {
-    log.info("--- --- remove duplicate value --- ---");
-    exeNoDuplicate(3);
+
+//    exeNoDuplicate();
+    bulkOperation();
+    bulkOperation(Arrays.asList(1,2,3,4,5),Arrays.asList(11,13,5),(o,t)->{o.addAll(t);});
+    bulkOperation(Arrays.asList(1,2,3,4,5),Arrays.asList(1,3,5),(o,t)->{o.addAll(t);});
+    bulkOperation(Arrays.asList(1,2,3,4,5),Arrays.asList(1,3,5),(o,t)->{o.removeAll(t);});
+    bulkOperation(Arrays.asList(1,2,3,4,5),Arrays.asList(11,13,5),(o,t)->{o.retainAll(t);});
+
   }
 
   @Data
